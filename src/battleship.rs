@@ -1,16 +1,16 @@
 struct Board {
-    boats: [Boat]
+    boats: Vec<Boat>
 }
 
 impl Board {
     fn shoot(&mut self, coord: Coordinates) -> ShotResult {
-        ShotResult::Miss
+        ShotResult::Missed
     }
 }
 
 
 struct Boat {
-    position: Vec<Coordinates>  // could be an array ?
+    position: Vec<Coordinates>
 }
 
 impl Boat {
@@ -24,11 +24,13 @@ struct Coordinates {
     y: i32,
 }
 
-fn new_coord(x: i32, y: i32) -> Coordinates {
-    return Coordinates { x, y };
+impl Coordinates {
+    fn new(x: i32, y: i32) -> Coordinates {
+        return Coordinates { x, y };
+    }
 }
 
-
+#[derive(PartialEq, Debug)]
 enum ShotResult {
     Missed,
     Hit,
@@ -42,12 +44,12 @@ mod tests {
 
     #[test]
     fn shoot_missed() {
-        let Board {
-            boats: [
-            Boat::new(vec![new_coord(5, 2), new_coord(6, 2)]),
-            Boat::new(vec![new_coord(7, 3), new_coord(7, 4), new_coord(7, 5)])
+        let mut board = Board {
+            boats: vec![
+                Boat::new(vec![Coordinates::new(5, 2), Coordinates::new(6, 2)]),
+                Boat::new(vec![Coordinates::new(7, 3), Coordinates::new(7, 4), Coordinates::new(7, 5)])
             ]
         };
-        assert_eq!(details, "Taupiqueur: 10hp 5mp")
+        assert_eq!(board.shoot(Coordinates::new(2,2)), ShotResult::Missed);
     }
 }
