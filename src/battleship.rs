@@ -1,10 +1,11 @@
+const GRID_SIZE: i8 = 10;
 
-struct Board {
-    boats: Vec<Boat>
+pub struct Board {
+    pub boats: Vec<Boat>
 }
 
 impl Board {
-    fn shoot(&mut self, coord: Coordinates) -> ShotResult {
+    pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
         for boat in &mut self.boats {
             if boat.is_at(&coord) {
                 return boat.hit(coord);
@@ -13,42 +14,79 @@ impl Board {
 
         ShotResult::Missed
     }
+
+    pub fn arrange(boat_sizes: Vec<i8>) {
+        let board = Board { boats: vec![] };
+        for boat_size in boat_sizes {}
+    }
+
+    pub fn print_grid(&self) {
+        print!("┌");
+        Board::render_vline();
+        print!("┐\n");
+        for i in 1..GRID_SIZE {
+            print!("|");
+            for j in 1..GRID_SIZE {
+                print!("{}", self.render_cell(Coordinates::new(i, j)));
+            }
+            print!("|\n")
+        }
+        print!("└");
+        Board::render_vline();
+        print!("┘\n");
+    }
+
+    fn render_vline() {
+
+        for j in 1..GRID_SIZE {
+            print!("---")
+        }
+    }
+
+    fn render_cell(&self, coord: Coordinates) -> &str {
+        for boat in &self.boats {
+            if boat.is_at(&coord) {
+                return " X ";
+            }
+        }
+        return "   ";
+    }
 }
 
 
-struct Boat {
+pub struct Boat {
     position: Vec<Coordinates>,
     hits: Vec<Coordinates>,
 }
 
 impl Boat {
-    fn new(position: Vec<Coordinates>) -> Boat {
+    pub fn new(position: Vec<Coordinates>) -> Boat {
         return Boat { position, hits: vec![] };
     }
 
-    fn is_at(&self, coord: &Coordinates) -> bool {
+    pub fn is_at(&self, coord: &Coordinates) -> bool {
         self.position.contains(coord)
     }
 
-    fn hit(&mut self, coord: Coordinates) -> ShotResult {
+    pub fn hit(&mut self, coord: Coordinates) -> ShotResult {
         self.hits.push(coord);
         for boat_coord in &self.position {
             if !self.hits.contains(boat_coord) {
                 return ShotResult::Hit;
             }
         }
-        return ShotResult::Destroyed
+        return ShotResult::Destroyed;
     }
 }
 
 #[derive(PartialEq, Debug)]
-struct Coordinates {
-    x: i32,
-    y: i32,
+pub struct Coordinates {
+    x: i8,
+    y: i8,
 }
 
 impl Coordinates {
-    fn new(x: i32, y: i32) -> Coordinates {
+    pub fn new(x: i8, y: i8) -> Coordinates {
         return Coordinates { x, y };
     }
 }
