@@ -1,3 +1,5 @@
+use rand::Rng;
+
 const GRID_SIZE: i8 = 10;
 
 pub struct Board {
@@ -15,9 +17,21 @@ impl Board {
         ShotResult::Missed
     }
 
-    pub fn arrange(boat_sizes: Vec<i8>) {
-        let board = Board { boats: vec![] };
-        for boat_size in boat_sizes {}
+    pub fn arrange_boat_with_size(&mut self, boat_size: i8) {
+        let mut rng = rand::thread_rng();
+
+        let i = rng.gen_range(1..GRID_SIZE + 1 - boat_size);
+        let j = rng.gen_range(1..GRID_SIZE + 1);
+
+        let orientation: bool = rand::random();
+
+        let position = (i..(i + boat_size))
+            .collect::<Vec<i8>>()
+            .iter_mut()
+            .map(|i| if orientation { Coordinates::new(i.clone(), j) } else { Coordinates::new(j, i.clone()) })
+            .collect::<Vec<Coordinates>>();
+
+        self.boats.push(Boat::new(position));
     }
 
     pub fn print_grid(&self) {
@@ -37,7 +51,6 @@ impl Board {
     }
 
     fn render_vline() {
-
         for j in 1..GRID_SIZE {
             print!("---")
         }
@@ -46,7 +59,7 @@ impl Board {
     fn render_cell(&self, coord: Coordinates) -> &str {
         for boat in &self.boats {
             if boat.is_at(&coord) {
-                return " X ";
+                return " ■ ";
             }
         }
         return "   ";

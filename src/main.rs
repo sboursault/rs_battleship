@@ -7,12 +7,10 @@ fn main() {
     println!("\n    !! rs_battleship !!");
 
     let mut board = Board {
-        boats: vec![
-            Boat::new(vec![Coordinates::new(5, 2), Coordinates::new(6, 2)]),
-            Boat::new(vec![Coordinates::new(7, 3), Coordinates::new(7, 4), Coordinates::new(7, 5), Coordinates::new(7, 6)])
-        ]
+        boats: vec![]
     };
 
+    board.arrange_boat_with_size(3);
     board.print_grid();
 
 
