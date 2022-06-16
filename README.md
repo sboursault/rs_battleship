@@ -10,3 +10,7 @@ could add a react UI with Cypress tests
 
 - https://github.com/fdehau/tui-rs
 - https://crates.io/crates/druid
+
+## Extended ascii table
+
+https://coding.tools/ascii-table

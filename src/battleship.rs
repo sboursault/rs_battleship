@@ -2,6 +2,7 @@ use rand::Rng;
 
 const GRID_SIZE: i8 = 10;
 
+
 pub struct Board {
     pub boats: Vec<Boat>
 }
@@ -9,14 +10,33 @@ pub struct Board {
 impl Board {
     pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
         for boat in &mut self.boats {
-            if boat.is_at(&coord) {
+            if boat.is_at(coord) {
                 return boat.hit(coord);
             }
         }
 
         ShotResult::Missed
     }
+    /*    pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
+        let mut boat= self.find_boat_at_position(coord);
+        if boat.is_some() {
+            //let x : Option<&mut Boat> = boat.as_deref_mut();
+            return boat.unwrap().hit(coord);
+        }
+        ShotResult::Missed
+    }
 
+    pub fn find_boat_at_position(&self, coord: Coordinates) -> Option<Boat> {
+
+        for boat in self.boats {
+            if boat.is_at(coord) {
+                return Option::Some(boat);
+            }
+        }
+
+        Option::None
+    }
+*/
     pub fn arrange_boat_with_size(&mut self, boat_size: i8) {
         let mut rng = rand::thread_rng();
 
@@ -36,7 +56,7 @@ impl Board {
 
     pub fn print_grid(&self) {
         print!("┌");
-        Board::render_vline();
+        self.print_vline();
         print!("┐\n");
         for i in 1..GRID_SIZE {
             print!("|");
@@ -46,19 +66,19 @@ impl Board {
             print!("|\n")
         }
         print!("└");
-        Board::render_vline();
+        self.print_vline();
         print!("┘\n");
     }
 
-    fn render_vline() {
-        for j in 1..GRID_SIZE {
+    fn print_vline(&self) {
+        for _ in 1..GRID_SIZE {
             print!("---")
         }
     }
 
     fn render_cell(&self, coord: Coordinates) -> &str {
         for boat in &self.boats {
-            if boat.is_at(&coord) {
+            if boat.is_at(coord) {
                 return " ■ ";
             }
         }
@@ -66,7 +86,7 @@ impl Board {
     }
 }
 
-
+#[derive(PartialEq, Debug)]
 pub struct Boat {
     position: Vec<Coordinates>,
     hits: Vec<Coordinates>,
@@ -77,8 +97,8 @@ impl Boat {
         return Boat { position, hits: vec![] };
     }
 
-    pub fn is_at(&self, coord: &Coordinates) -> bool {
-        self.position.contains(coord)
+    pub fn is_at(&self, coord: Coordinates) -> bool {
+        self.position.contains(&coord)
     }
 
     pub fn hit(&mut self, coord: Coordinates) -> ShotResult {
@@ -92,7 +112,7 @@ impl Boat {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub struct Coordinates {
     x: i8,
     y: i8,
@@ -116,6 +136,30 @@ enum ShotResult {
 mod tests {
     use super::*;
 
+
+    /*#[test]
+    fn find_boat_at_position() {
+        let boat_1 = Boat::new(vec![Coordinates::new(5, 2), Coordinates::new(6, 2)]);
+        let boat_2 = Boat::new(vec![Coordinates::new(7, 3), Coordinates::new(7, 4), Coordinates::new(7, 5)]);
+        let mut board = Board {
+            boats: vec![
+                boat_1,
+                boat_2
+            ]
+        };
+        assert_eq!(
+            board.find_boat_at_position(Coordinates::new(7, 3)),
+            Option::Some(Boat::new(vec![Coordinates::new(7, 3), Coordinates::new(7, 4), Coordinates::new(7, 5)]))
+        );
+        assert_eq!(
+            board.find_boat_at_position(Coordinates::new(6, 2)),
+            Option::Some(Boat::new(vec![Coordinates::new(5, 2), Coordinates::new(6, 2)]))
+        );
+        assert_eq!(
+            board.find_boat_at_position(Coordinates::new(2, 2)),
+            Option::None
+        );
+    }*/
 
     #[test]
     fn shoot() {
