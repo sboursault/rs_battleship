@@ -9,34 +9,21 @@ pub struct Board {
 
 impl Board {
     pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
-        for boat in &mut self.boats {
-            if boat.is_at(coord) {
-                return boat.hit(coord);
-            }
-        }
-
-        ShotResult::Missed
-    }
-    /*    pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
-        let mut boat= self.find_boat_at_position(coord);
+        let boat = self.find_boat_at_position_as_mut(coord);
         if boat.is_some() {
             //let x : Option<&mut Boat> = boat.as_deref_mut();
             return boat.unwrap().hit(coord);
         }
+
         ShotResult::Missed
     }
 
-    pub fn find_boat_at_position(&self, coord: Coordinates) -> Option<Boat> {
-
-        for boat in self.boats {
-            if boat.is_at(coord) {
-                return Option::Some(boat);
-            }
-        }
-
-        Option::None
+    pub fn find_boat_at_position_as_mut(&mut self, coord: Coordinates) -> Option<&mut Boat> {  // un peu nul de renvoyer un mutable...
+        return self.boats.iter_mut()
+            .filter(|boat| boat.is_at(coord))
+            .nth(0);
     }
-*/
+
     pub fn arrange_boat_with_size(&mut self, boat_size: i8) {
         let mut rng = rand::thread_rng();
 
