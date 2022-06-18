@@ -4,7 +4,7 @@ use battleship::*;
 
 fn main() {
 
-    println!("\n    !! rs_battleship !!");
+    println!("\n         !! rs_battleship !!");
 
     let mut board = Board {
         boats: vec![]

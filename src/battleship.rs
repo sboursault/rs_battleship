@@ -32,7 +32,7 @@ impl Board {
 
         let mut is_free_position: bool = false;
 
-        let mut position:Vec<Coordinates> = vec![];
+        let mut position: Vec<Coordinates> = vec![];  // there's probably a better way...
 
         while is_free_position == false {
             let i = rng.gen_range(1..GRID_SIZE + 1 - boat_size);
@@ -60,23 +60,24 @@ impl Board {
     }
 
     pub fn print_grid(&self) {
-        print!("┌");
-        self.print_vline();
+        print!("   ┌");
+        self.print_line();
         print!("┐\n");
-        for i in 1..GRID_SIZE {
-            print!("|");
-            for j in 1..GRID_SIZE {
+        for i in 1..GRID_SIZE + 1 {
+            print!("{: >2} |", i);  // left padd number with white space
+            for j in 1..GRID_SIZE + 1 {
                 print!("{}", self.render_cell(Coordinates::new(i, j)));
             }
             print!("|\n")
         }
-        print!("└");
-        self.print_vline();
+        print!("   └");
+        self.print_line();
         print!("┘\n");
+        println!("     A  B  C  D  E  F  G  H  I  J");
     }
 
-    fn print_vline(&self) {
-        for _ in 1..GRID_SIZE {
+    fn print_line(&self) {
+        for _ in 1..GRID_SIZE + 1 {
             print!("---")
         }
     }
@@ -188,7 +189,7 @@ mod tests {
                 Boat::new(vec![Coordinates::new(7, 3), Coordinates::new(7, 4), Coordinates::new(7, 5)])
             ]
         };
-        assert_eq!(board.is_free_position(vec![Coordinates::new(5, 1), Coordinates::new(5, 2)]), false);
-        assert_eq!(board.is_free_position(vec![Coordinates::new(8, 4), Coordinates::new(8, 5)]), true);
+        assert_eq!(board.is_free_position(&vec![Coordinates::new(5, 1), Coordinates::new(5, 2)]), false);
+        assert_eq!(board.is_free_position(&vec![Coordinates::new(8, 4), Coordinates::new(8, 5)]), true);
     }
 }
