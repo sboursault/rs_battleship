@@ -9,17 +9,20 @@ pub struct Board {
 
 impl Board {
     pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
-        let boat = self.find_boat_at_position_as_mut(coord);
-        if boat.is_some() {
-            //let x : Option<&mut Boat> = boat.as_deref_mut();
-            return boat.unwrap().hit(coord);
-        }
-
-        ShotResult::Missed
+        return match self.find_boat_at_coord_as_mut(coord) {
+            Some(boat) => boat.hit(coord),
+            None => ShotResult::Missed
+        };
     }
 
-    pub fn find_boat_at_position_as_mut(&mut self, coord: Coordinates) -> Option<&mut Boat> {  // un peu nul de renvoyer un mutable...
+    fn find_boat_at_coord_as_mut(&mut self, coord: Coordinates) -> Option<&mut Boat> {
         return self.boats.iter_mut()
+            .filter(|boat| boat.is_at(coord))
+            .nth(0);
+    }
+
+    fn find_boat_at_coord(&self, coord: Coordinates) -> Option<&Boat> {
+        return self.boats.iter()
             .filter(|boat| boat.is_at(coord))
             .nth(0);
     }
@@ -27,18 +30,33 @@ impl Board {
     pub fn arrange_boat_with_size(&mut self, boat_size: i8) {
         let mut rng = rand::thread_rng();
 
-        let i = rng.gen_range(1..GRID_SIZE + 1 - boat_size);
-        let j = rng.gen_range(1..GRID_SIZE + 1);
+        let mut is_free_position: bool = false;
 
-        let orientation: bool = rand::random();
+        let mut position:Vec<Coordinates> = vec![];
 
-        let position = (i..(i + boat_size))
-            .collect::<Vec<i8>>()
-            .iter_mut()
-            .map(|i| if orientation { Coordinates::new(i.clone(), j) } else { Coordinates::new(j, i.clone()) })
-            .collect::<Vec<Coordinates>>();
+        while is_free_position == false {
+            let i = rng.gen_range(1..GRID_SIZE + 1 - boat_size);
+            let j = rng.gen_range(1..GRID_SIZE + 1);
+
+            let orientation: bool = rand::random();
+
+            position = (i..(i + boat_size))
+                .collect::<Vec<i8>>()
+                .iter_mut()
+                .map(|i| if orientation { Coordinates::new(i.clone(), j) } else { Coordinates::new(j, i.clone()) })
+                .collect::<Vec<Coordinates>>();
+
+            is_free_position = self.is_free_position(&position);
+        }
 
         self.boats.push(Boat::new(position));
+    }
+
+    fn is_free_position(&self, position: &Vec<Coordinates>) -> bool {
+        let overlap: Option<&Coordinates> =
+            position.iter()
+                .find(|coord| self.find_boat_at_coord(**coord).is_some()); // MAIS CEST QUOI CE DEREFERENCEMENT ??!!!! possible grace au trait Copy ?
+        return overlap.is_none();
     }
 
     pub fn print_grid(&self) {
@@ -160,5 +178,17 @@ mod tests {
         assert_eq!(board.shoot(Coordinates::new(4, 2)), ShotResult::Missed);
         assert_eq!(board.shoot(Coordinates::new(7, 4)), ShotResult::Hit);
         assert_eq!(board.shoot(Coordinates::new(6, 2)), ShotResult::Destroyed);
+    }
+
+    #[test]
+    fn is_free_position() {
+        let mut board = Board {
+            boats: vec![
+                Boat::new(vec![Coordinates::new(5, 2), Coordinates::new(6, 2)]),
+                Boat::new(vec![Coordinates::new(7, 3), Coordinates::new(7, 4), Coordinates::new(7, 5)])
+            ]
+        };
+        assert_eq!(board.is_free_position(vec![Coordinates::new(5, 1), Coordinates::new(5, 2)]), false);
+        assert_eq!(board.is_free_position(vec![Coordinates::new(8, 4), Coordinates::new(8, 5)]), true);
     }
 }
