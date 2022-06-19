@@ -27,6 +27,11 @@ impl Board {
             .nth(0);
     }
 
+    pub fn arrange_boats_with_size(&mut self, sizes: Vec<i8>) {
+        sizes.iter()
+            .for_each(|size| self.arrange_boat_with_size(*size));
+    }
+
     pub fn arrange_boat_with_size(&mut self, boat_size: i8) {
         let mut rng = rand::thread_rng();
 

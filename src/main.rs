@@ -3,17 +3,12 @@ mod battleship;
 use battleship::*;
 
 fn main() {
-
     println!("\n         !! rs_battleship !!");
 
     let mut board = Board {
         boats: vec![]
     };
 
-    board.arrange_boat_with_size(3);
-    board.arrange_boat_with_size(5);
-    board.arrange_boat_with_size(4);
+    board.arrange_boats_with_size(vec![5, 4, 3, 3, 2, 2]);
     board.print_grid();
-
-
 }
