@@ -1,14 +1,21 @@
 use rand::Rng;
+use colored::Colorize;
 
 const GRID_SIZE: i8 = 10;
 
 
 pub struct Board {
-    pub boats: Vec<Boat>
+    boats: Vec<Boat>,
+    shots: Vec<Coordinates>,
 }
 
 impl Board {
+    pub fn new() -> Board {
+        return Board { boats: vec![], shots: vec![] };
+    }
+
     pub fn shoot(&mut self, coord: Coordinates) -> ShotResult {
+        self.shots.push(coord);
         return match self.find_boat_at_coord_as_mut(coord) {
             Some(boat) => boat.hit(coord),
             None => ShotResult::Missed
@@ -71,7 +78,7 @@ impl Board {
         for i in 1..GRID_SIZE + 1 {
             print!("{: >2} |", i);  // left padd number with white space
             for j in 1..GRID_SIZE + 1 {
-                print!("{}", self.render_cell(Coordinates::new(i, j)));
+                self.render_cell(Coordinates::new(i, j));
             }
             print!("|\n")
         }
@@ -87,13 +94,14 @@ impl Board {
         }
     }
 
-    fn render_cell(&self, coord: Coordinates) -> &str {
+    fn render_cell(&self, coord: Coordinates) {
         for boat in &self.boats {
             if boat.is_at(coord) {
-                return " ■ ";
+                print!("{}", if self.shots.contains(&coord) { " X ".red() } else { " ■ ".green() });
+                return;
             }
         }
-        return "   ";
+        print!("{}", if self.shots.contains(&coord) { " · " } else { "   " });
     }
 }
 
@@ -136,7 +144,7 @@ impl Coordinates {
 }
 
 #[derive(PartialEq, Debug)]
-enum ShotResult {
+pub enum ShotResult {
     Missed,
     Hit,
     Destroyed,
